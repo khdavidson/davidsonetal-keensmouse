@@ -68,11 +68,11 @@ qqline(res2)
 shapiro.test(res2)
 plot(lm(cpuepropn$asin_CPUE_propn ~ cpuepropn$group))
 
-# arcsine doesn't really change anything and original raw proportion data were pretty OK, so maintain that
+# arcsine doesn't really change anything and original raw proportion data were OK, so maintain that
 
 # recaptures
 #shapiro.test(cpuepropn$propn_CPUErecap)     # p = 0.678 therefore normal 
-#qqnorm(cpuepropn$propn_CPUErecap)           # pretty damn normal
+#qqnorm(cpuepropn$propn_CPUErecap)           # pretty normal
 #qqline(cpuepropn$propn_CPUErecap, col = "red")
 #hist(cpuepropn$propn_CPUErecap)             # normal...?
 #bartlett.test(cpuepropn$propn_CPUErecap ~ cpuepropn$group)        # p = 0.117 therefore equal variances 
@@ -95,7 +95,7 @@ TukeyHSD(recap_aov)
 #### 0-25 - 100-125   p = 0.075
 
 
-#################################### in both cases, sig differences between 0-25 and 150-200 thank fuck something finally worked
+#################################### in both cases, sig differences between 0-25 and 150-200 
 
 
 
@@ -118,21 +118,20 @@ CPUE$stat <- c("a","ab","b","ab")
 
 ggplot(CPUE, aes(x=group, y=mean_CPUEfrst)) + 
   labs(x="Distance from beach (m)", y="Proportion of CPUE") +
-  scale_y_continuous(limits=c(0, 1.0),breaks=seq(0, 1.0, by = 0.2))  +
+  scale_y_continuous(limits=c(0, 1.0), breaks=seq(0, 1.0, by = 0.2))  +
   geom_bar(stat="identity", fill = "gray", colour="black", size=1.5) + 
   geom_bar(stat = "identity", fill = "gray") +
-  geom_text(aes(label=stat), vjust=-3,size=6) +
+  geom_text(aes(label=stat), vjust=-4,size=12) +
   geom_errorbar(data = CPUE, aes(ymin = mean_CPUEfrst - se_frst,
                                 ymax = mean_CPUEfrst + se_frst), width=.09, size=1, colour="black")  +
-  annotate(geom="text", x=0.56, y=1, label="A", color="black", size=6, fontface=2) +
+  #annotate(geom="text", x=0.52, y=1.1, label="A", color="black", size=8, fontface=2) +
   theme_bw() +
-    theme(text = element_text(size=12)) +
     theme(panel.border = element_rect(colour = "black", size=1.2))+
     theme(panel.grid.minor = element_blank()) + 
     theme(panel.grid.major = element_blank()) + 
-    theme(axis.text = element_text(colour = "black", size=14)) + 
-    theme(axis.title.x = element_text(margin = margin(t=6, r=0, b=0, l=0), colour = "black", size=18)) +
-    theme(axis.title.y = element_text(margin = margin(t=0, r=7, b=0, l=0), colour = "black", size=18)) +
+    theme(axis.text = element_text(colour = "black", size=30)) + 
+    theme(axis.title.x = element_text(margin = margin(t=6, r=0, b=0, l=0), colour = "black", size=34)) +
+    theme(axis.title.y = element_text(margin = margin(t=0, r=7, b=0, l=0), colour = "black", size=34)) +
     theme(axis.ticks = element_line(size = 1, colour = "black")) +
     theme(axis.ticks.length = unit(0.2, "cm")) +
     theme(legend.position=c(0.87,0.85))+ 
@@ -209,7 +208,7 @@ ggplot(sum, aes(x=group, y=propn)) +
 
 ###############################################################################################################
 
-# remaking figure 7 from thesis because i can't find the code and i want to change slightly to include in MS submission feb-2020
+# remake figure 7 from thesis for MS submission feb-2020
 
 trapdat <- read.csv("Livetraps_subset_no100isls_locnfirstcapture.csv")
 
@@ -234,24 +233,23 @@ genprn$dist_class <- factor(genprn$dist_class, levels = c("0-25", "50-75", "100-
 ggplot(genprn, aes(x=dist_class, y=propn, fill=Sex)) + 
   geom_bar(stat="identity", colour="black", size=0.8) +
   scale_fill_manual(values = c("gray80", "gray20"), name = "Sex", labels = c("Female", "Male")) +
-  annotate(geom="text", x=0.55, y=1, label="B", color="black", size=6, fontface=2) +
+  #annotate(geom="text", x=0.55, y=1, label="B", color="black", size=6, fontface=2) +
   scale_y_continuous(limits=c(0,1), breaks=seq(0,1,0.2)) +
   labs(x="Distance from beach (m)", y="Proportion of captures") +
   theme_bw() +
-    theme(text = element_text(size=12)) +
-    theme(panel.border = element_rect(colour = "black", size=1.2))+
-    theme(panel.grid.minor = element_blank()) + 
-    theme(panel.grid.major = element_blank()) + 
-    theme(axis.text = element_text(colour = "black", size=14)) + 
-    theme(axis.title.x = element_text(margin = margin(t=6, r=0, b=0, l=0), colour = "black", size=18)) +
-    theme(axis.title.y = element_text(margin = margin(t=0, r=7, b=0, l=0), colour = "black", size=18)) +
-    theme(axis.ticks = element_line(size = 1, colour = "black")) +
-    theme(axis.ticks.length = unit(0.2, "cm")) +
-    theme(legend.position=c(0.86,0.85))+ 
-    theme(legend.background = element_rect(colour="black")) +
-    theme(legend.spacing.y = unit(0.1, "cm"),
-          legend.text = element_text(size=12),
-          legend.title = element_text(size=14)) 
+  theme(panel.border = element_rect(colour = "black", size=1.2))+
+  theme(panel.grid.minor = element_blank()) + 
+  theme(panel.grid.major = element_blank()) + 
+  theme(axis.text = element_text(colour = "black", size=30)) + 
+  theme(axis.title.x = element_text(margin = margin(t=6, r=0, b=0, l=0), colour = "black", size=34)) +
+  theme(axis.title.y = element_text(margin = margin(t=0, r=7, b=0, l=0), colour = "black", size=34)) +
+  theme(axis.ticks = element_line(size = 1, colour = "black")) +
+  theme(axis.ticks.length = unit(0.2, "cm")) +
+  theme(legend.position=c(0.86,0.85))+ 
+  theme(legend.background = element_rect(colour="black", size=1)) +
+  theme(legend.spacing.y = unit(0.1, "cm"),
+        legend.text = element_text(size=30),
+        legend.title = element_text(size=34)) 
 
 
 
