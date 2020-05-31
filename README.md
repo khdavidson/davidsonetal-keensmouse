@@ -10,7 +10,7 @@ Most code files are still messy and not fully annotated, and call intermediate t
 - Beach invertebrate biomass: biomass_beachinverts
 - Guild biomass forest and beach: invert_guild_biomasses 
 - Hair distance trends: distshore_hair  
-- Poo distance trends: distancefromshore_isopoo
+- Poo distance trends: distshore_poo
 - Prey items distance trends isotopes: distshore_keyfooditems
 - Testing whether more males/females or reproductive/non-reproductive individuals are found near the beach or not: glmm_new_2july2018 
 - Signature comparisons of food items between regions: anova_wilcox_fooditems 
