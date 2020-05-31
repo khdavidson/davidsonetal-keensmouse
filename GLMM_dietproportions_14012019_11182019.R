@@ -456,7 +456,7 @@ t.C <- AICctab(C_m1, C_m2, C_m3, C_m4, C_m5, C_m6, C_m7, C_m8, C_m9, C_m10,
              nobs=44,logLik=T, base=T, weights=T, delta=T, sort=T)
 print(t.C)
 class(t.C) <- "data.frame"
-write.csv(t.C, "AIC_table_dec72019_Cmodels.csv", row.names = F)
+write.csv(t.C, "AIC_table_dec72019_Cmodels.csv", row.names = T)
 
 # Select top models 95% model weight
 top.set.C <- model.sel(cand.models.C)
@@ -583,7 +583,7 @@ t.N <- AICctab(N_m1, N_m2, N_m3, N_m4, N_m5, N_m6, N_m7, N_m8, N_m9, N_m10,
                nobs=44,logLik=T, base=T, weights=T, delta=T, sort=T)
 print(t.N)
 class(t.N) <- "data.frame"
-write.csv(t.N, "AIC_table_dec72019_Nmodels.csv", row.names = F)
+write.csv(t.N, "AIC_table_dec72019_Nmodels.csv", row.names = T)
 
 # Select top models 95% model weight
 top.set.N <- model.sel(cand.models.N)
