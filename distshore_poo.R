@@ -3,25 +3,24 @@
 # building on 2015 data may 2020
 # historical script: distancefromshore_isopoo.R
 
-################################################################################################################################################
 
 library(tidyverse)
 library(broom)
 
 setwd("~/UVic/`Hakai 100 Islands 2015/`DATA/Isotopes")
-raw.data = read.csv("Tray70bRversion.csv")
+poo.data = read.csv("Tray70bRversion.csv")
 
-################################################################################################################################################
+########################################################################################################################################################
 
-#######################
-#### DATA CLEANING ####
-#######################
+#################
+# DATA CLEANING #
+#################
 
 # Although the C:N and other C normalization values were calculated in Excel, I want to re-do here for transparency & reproducibility. 
 # Information used here relies on Post et al 2007 Oecologia 152(1): 179-189
 
 # Clean column names, re-calculate
-data <- raw.data %>% 
+poo.data <- poo.data %>% 
   rename(sample_ID = Sample.ID,
          C_amount = C.Amount..ug.,
          N_amount = N.Amount..ug.,
@@ -33,9 +32,13 @@ data <- raw.data %>%
   print()
 
 
-#########################
-#### SUBSTRATE TESTS ####
-#########################
+########################################################################################################################################################
+
+#                                                             PILOT STATISTICAL COMPARISONS
+
+###################
+# SUBSTRATE TESTS #
+###################
 
 # Faecal samples were part of a pilot project, so they were collected at S. Gosling Isl. (what ended up being one of the main sites) and a cobble beach on
 # the east side of Gosling Isl. 
@@ -43,21 +46,21 @@ data <- raw.data %>%
 # cobble. 
 
 # See what the mean +/- SD signatures are 
-substrate <- data %>% 
+substrate <- poo.data %>% 
   group_by(substrate) %>% 
   summarize(meanC = mean(d13C), sdC = sd(d13C), meanN = mean(d15N), sdN = (sd(d15N))) %>% 
   print()
 # cobble C values are more enriched than sand, but N values are more depleted than sand. Significant? 
 
 # linear models 
-lm1 <- lm(data$d13C ~ data$substrate)
+lm1 <- lm(poo.data$d13C ~ poo.data$substrate)
 r1 <- resid(lm1)
 hist(r1)
 qqnorm(r1)
 qqline(r1)
 summary(lm1)
 
-lm2 <- lm(data$d15N ~ data$substrate)
+lm2 <- lm(poo.data$d15N ~ poo.data$substrate)
 r2 <- resid(lm2)
 hist(r2)
 qqnorm(r2)
@@ -68,7 +71,7 @@ summary(lm2)
 # test each distance interval against each other 
 
 # run lms over each distance grouping - omitted 0, 25 and 50 as they didn't have enough observations (1 level factor throws error)
-C_lms <- data %>%
+C_lms <- poo.data %>%
   filter(dist_beach != "0", dist_beach != "25", dist_beach != "50") %>%
   group_by(dist_beach) %>%
   do(glance(lm(d13C ~ substrate, data = .))) %>%
@@ -82,42 +85,34 @@ C_lms <- data %>%
 
 
 
-########################
-#### C:N over space ####
-########################
+##################
+# C:N over space #
+##################
 
-ggplot(data, aes(x=dist_beach, y=CN_ratio)) +
+ggplot(poo.data, aes(x=dist_beach, y=CN_ratio)) +
   geom_point()
 
-lm_cn <- lm(data$CN_ratio ~ data$dist_beach)
+lm_cn <- lm(poo.data$CN_ratio ~ poo.data$dist_beach)
 rcn <- resid(lm_cn)
 hist(rcn)
 qqnorm(rcn)
 qqline(rcn)
-aov_cn <- aov(data$CN_ratio ~ data$dist_beach)
+aov_cn <- aov(poo.data$CN_ratio ~ poo.data$dist_beach)
 summary(aov_cn)
 # no pattern/significance really 
 
 
 
-###############################
-#### FINAL STATS + FIGURES ####
-###############################
+#######################################################################################################################################################
 
-# Summarize mean +/- SE for each site (i.e., substrate) -- for plotting only 
-summary <- data %>% 
-  group_by(substrate, dist_group) %>% 
-  summarize(meanC = mean(d13C), seC = sd(d13C)/sqrt(length(d13C)), 
-            meanN = mean(d15N), seN = sd(d15N)/sqrt(length(d15N)),
-            n=n()) %>% 
-  mutate(label = ifelse(n==1, "*", "")) %>%
-  ungroup() %>%
-  mutate(site = ifelse(substrate=="Sand", "GOS", "GOS-E")) %>%
-  print()
+#                                                           STATISTICAL COMPARISONS
 
 # Stats for overall trend (pooled, not separated by site i.e. substrate) of [isotope] ~ distance from shore
-lmN <- lm(data$d15N ~ data$dist_group)
-aovN <- aov(data$d15N ~ data$dist_group)
+
+# ----------------------------- NITROGEN 
+
+lmN <- lm(poo.data$d15N ~ poo.data$dist_group)
+aovN <- aov(poo.data$d15N ~ poo.data$dist_group)
 rN <- resid(lmN)
 hist(rN)
 qqnorm(rN)
@@ -126,8 +121,11 @@ summary(lmN)
 summary(aovN)
 TukeyHSD(aovN)
 
-lmC <- lm(data$d13C ~ data$dist_group)
-aovC <- aov(data$d13C ~ data$dist_group)
+
+# ----------------------------- CARBON 
+
+lmC <- lm(poo.data$d13C ~ poo.data$dist_group)
+aovC <- aov(poo.data$d13C ~ poo.data$dist_group)
 rC <- resid(lmC)
 hist(rC)
 qqnorm(rC)
@@ -136,19 +134,38 @@ summary(lmC)
 summary(aovC)
 
 
-#### d15N white paper figure ####
-summary$site <- factor(summary$site, levels=c("GOS", "GOS-E"), ordered=T)
-summary$dist_group <- factor(summary$dist_group, levels=c("0-25", "50-75", "100-125", "150-200"), ordered=T)
+#######################################################################################################################################################
+
+#                                                           PLOTS
+
+
+
+# Summarize mean +/- SE for each site (i.e., substrate) -- for plotting only 
+poo.summary <- poo.data %>% 
+  group_by(dist_group) %>% 
+  summarize(meanC = mean(d13C), seC = sd(d13C)/sqrt(length(d13C)), 
+            meanN = mean(d15N), seN = sd(d15N)/sqrt(length(d15N)),
+            n=n()) %>% 
+ #mutate(label = ifelse(n==1, "*", "")) %>%
+ #ungroup() %>%
+ #mutate(site = ifelse(substrate=="Sand", "GOS", "GOS-E")) %>%
+  print()
+poo.summary$site <- factor(poo.summary$site, levels=c("GOS", "GOS-E"), ordered=T)
+poo.summary$dist_group <- factor(poo.summary$dist_group, levels=c("0-25", "50-75", "100-125", "150-200"), ordered=T)
+
+
+# ----------------------------- NITROGEN 
+
 scaleFUN <- function(x) sprintf("%.1f", x)
 
-ggplot(data = summary, aes(x = dist_group, y = meanN)) + 
+ggplot(data=poo.summary, aes(x=dist_group, y=meanN)) + 
   labs(x = "Distance from beach (m)") +
   ylab(expression(paste(delta^{15},'N (\211)'))) +
-  geom_errorbar(aes(ymin = meanN-seN, ymax = meanN+seN, colour=site), width=0, size=1.5) + 
-  geom_point(aes(shape=site, fill=site), colour="black", size=7, stroke=1.3) +
-  scale_shape_manual(values=c(21, 24)) +
-  scale_fill_manual(values=c("gray10", "gray60")) +
-  scale_colour_manual(values=c("gray10", "gray60")) +
+  geom_errorbar(aes(ymin = meanN-seN, ymax = meanN+seN), width=0, size=1.5) + 
+  geom_point(colour="black", size=7, stroke=1.3) +
+ # scale_shape_manual(values=c(21, 24)) +
+ # scale_fill_manual(values=c("gray10", "gray60")) +
+#  scale_colour_manual(values=c("gray10", "gray60")) +
   scale_y_continuous(breaks=seq(-1,10,by=2), labels=scaleFUN) +
   theme_bw() +
   theme(axis.title = element_text(size=30, face = "bold"),
@@ -164,23 +181,22 @@ ggplot(data = summary, aes(x = dist_group, y = meanN)) +
         legend.position = c(0.85,0.86),
         legend.background = element_rect(colour="black", size=0.8),
         legend.key.size = unit(10, "mm"),
-        legend.margin = margin(t=-2,b=4,l=5,r=8)) +
-  geom_text(data=summary %>% filter(label=="*"), aes(label=label), nudge_x=0.1, nudge_y=-0.15, colour="white", size=13)
+        legend.margin = margin(t=-2,b=4,l=5,r=8)) #+
+  #geom_text(data=summary %>% filter(label=="*"), aes(label=label), nudge_x=0.1, nudge_y=-0.15, colour="white", size=13)
 
 
-#### d13C white paper figure ####
-summary$site <- factor(summary$site, levels=c("GOS", "GOS-E"), ordered=T)
-summary$dist_group <- factor(summary$dist_group, levels=c("0-25", "50-75", "100-125", "150-200"), ordered=T)
+# ----------------------------- CARBON 
+
 scaleFUN <- function(x) sprintf("%.1f", x)
 
-ggplot(data = summary, aes(x = dist_group, y = meanC)) + 
+ggplot(data=poo.summary, aes(x=dist_group, y=meanC)) + 
   labs(x = "Distance from beach (m)") +
   ylab(expression(paste(delta^{13},'C (\211)'))) +
-  geom_errorbar(aes(ymin = meanC-seC, ymax = meanC+seC, colour=site), width=0, size=1.5, alpha=0.7) + 
-  geom_point(aes(shape=site, fill=site), colour="black", size=7, stroke=1.3) +
-  scale_shape_manual(values=c(21, 24)) +
-  scale_fill_manual(values=c("gray10", "gray60")) +
-  scale_colour_manual(values=c("gray10", "gray60")) +
+  geom_errorbar(aes(ymin = meanC-seC, ymax = meanC+seC), width=0, size=1.5, alpha=0.7) + 
+  geom_point(colour="black", size=7, stroke=1.3) +
+  #scale_shape_manual(values=c(21, 24)) +
+  #scale_fill_manual(values=c("gray10", "gray60")) +
+  #scale_colour_manual(values=c("gray10", "gray60")) +
   scale_y_continuous(limits=c(-29, -26.5), labels=scaleFUN) +
   theme_bw() +
   theme(axis.title = element_text(size=30, face = "bold"),
@@ -196,9 +212,108 @@ ggplot(data = summary, aes(x = dist_group, y = meanC)) +
         legend.position = c(0.88,0.88),
         legend.background = element_rect(colour="black", size=0.8),
         legend.key.size = unit(10, "mm"),
-        legend.margin = margin(t=-2,b=4,l=5,r=8)) +
-  geom_text(data=summary %>% filter(label=="*"), aes(label=label), nudge_x=0, nudge_y=-0.032, colour="white", size=13)
+        legend.margin = margin(t=-2,b=4,l=5,r=8)) #+
+  #geom_text(data=summary %>% filter(label=="*"), aes(label=label), nudge_x=0, nudge_y=-0.032, colour="white", size=13)
   
+
+#=========================================================================================== COMBO PLOTS
+
+# Combo plots of HAIR + POO
+# must have distshore_hair script open and have ran all of the intermediate tables prior to re-making these plots
+# data to use for hair: hair.summary     for poo: poo.summary
+# this is also duplicatedin the distshore_poo script
+
+poo.summary <- poo.summary %>%
+  select(dist_group:seN) %>%
+  mutate(source="Faeces") %>%
+  print()
+
+hair.summary <- hair.summary %>%
+  mutate(source="Hair") %>%
+  print()
+
+combo.summary <- rbind(poo.summary, hair.summary)
+combo.summary <- combo.summary %>%
+  arrange(desc(source)) %>%
+  print
+combo.summary$source <- factor(combo.summary$source, levels=c("Faeces", "Hair"), ordered=T)
+
+
+# ----------------------------- NITROGEN 
+
+scaleFUN <- function(x) sprintf("%.1f", x)
+
+ggplot(data=combo.summary, aes(x=dist_group, y=meanN)) + 
+  geom_errorbar(aes(ymin=meanN-seN, ymax=meanN+seN, colour=source), width=0, size=1.5) + 
+  geom_point(aes(fill=source), colour="black", size=7, stroke=1.3, shape=21) +
+  scale_fill_manual(values=c("gray80", "gray20")) +
+  scale_colour_manual(values=c("gray80", "gray20")) +
+  scale_y_continuous(labels=scaleFUN) +
+  labs(x = "Distance from beach (m)") +
+  ylab(expression(paste(delta^{15},'N (\211)'))) +
+  theme_bw() +
+  theme(axis.title = element_text(size=30, face = "bold"),
+        axis.title.y = element_text(margin=margin(t=2,l=0,r=4,b=0)),
+        axis.text = element_text(size=27, colour="black"),
+        axis.ticks = element_line(size=1),
+        axis.ticks.length = unit(1.5, "mm"),
+        panel.grid.major = element_blank(),#line(colour="gray80", size=0.8),
+        panel.grid.minor = element_blank(),
+        panel.border = element_rect(size=1.1),
+        legend.position = "none") 
+
+
+# ----------------------------- CARBON 
+
+scaleFUN <- function(x) sprintf("%.1f", x)
+
+ggplot(data=combo.summary, aes(x=dist_group, y=meanC)) + 
+  geom_errorbar(aes(ymin=meanC-seC, ymax=meanC+seC, colour=source), width=0, size=1.5) + 
+  geom_point(aes(fill=source), colour="black", size=7, stroke=1.3, shape=21) +
+  scale_fill_manual(values=c("gray80", "gray20")) +
+  scale_colour_manual(values=c("gray80", "gray20")) +
+  scale_y_continuous(labels=scaleFUN) +
+  labs(x = "Distance from beach (m)") +
+  ylab(expression(paste(delta^{13},'C (\211)'))) +
+  theme_bw() +
+  theme(axis.title = element_text(size=30, face = "bold"),
+        axis.title.y = element_text(margin=margin(t=2,l=0,r=4,b=0)),
+        axis.text = element_text(size=27, colour="black"),
+        axis.ticks = element_line(size=1),
+        axis.ticks.length = unit(1.5, "mm"),
+        panel.grid.major = element_blank(),#line(colour="gray80", size=0.8),
+        panel.grid.minor = element_blank(),
+        panel.border = element_rect(size=1.1),
+        legend.text = element_text(size=27), 
+        legend.title = element_blank(),
+        legend.position = c(0.15,0.86),
+        legend.background = element_rect(colour="black", size=0.8),
+        legend.key.size = unit(10, "mm"),
+        legend.margin = margin(t=-2,b=4,l=5,r=8)) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
