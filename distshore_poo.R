@@ -27,7 +27,9 @@ data <- raw.data %>%
          N_amount = N.Amount..ug.,
          CN_ratio = C.N) %>%
   mutate(CN_ratio = C_amount/N_amount) %>% 
-  
+  mutate(dist_group = ifelse(dist_beach =="0"|dist_beach=="25", "0-25", 
+                             ifelse(dist_beach=="50"|dist_beach=="75", "50-75",
+                                    ifelse(dist_beach=="100"|dist_beach=="125", "100-125", "150-200")))) %>%
   print()
 
 
@@ -102,9 +104,9 @@ summary(aov_cn)
 #### FINAL STATS + FIGURES ####
 ###############################
 
-# Summarize mean +/- SE for each site (i.e., substrate) 
+# Summarize mean +/- SE for each site (i.e., substrate) -- for plotting only 
 summary <- data %>% 
-  group_by(substrate, dist_beach) %>% 
+  group_by(substrate, dist_group) %>% 
   summarize(meanC = mean(d13C), seC = sd(d13C)/sqrt(length(d13C)), 
             meanN = mean(d15N), seN = sd(d15N)/sqrt(length(d15N)),
             n=n()) %>% 
@@ -114,17 +116,18 @@ summary <- data %>%
   print()
 
 # Stats for overall trend (pooled, not separated by site i.e. substrate) of [isotope] ~ distance from shore
-lmN <- lm(data$d15N ~ data$dist_beach)
-aovN <- aov(data$d15N ~ data$dist_beach)
+lmN <- lm(data$d15N ~ data$dist_group)
+aovN <- aov(data$d15N ~ data$dist_group)
 rN <- resid(lmN)
 hist(rN)
 qqnorm(rN)
 qqline(rN)
 summary(lmN)
 summary(aovN)
+TukeyHSD(aovN)
 
-lmC <- lm(data$d13C ~ data$dist_beach)
-aovC <- aov(data$d13C ~ data$dist_beach)
+lmC <- lm(data$d13C ~ data$dist_group)
+aovC <- aov(data$d13C ~ data$dist_group)
 rC <- resid(lmC)
 hist(rC)
 qqnorm(rC)
@@ -135,9 +138,10 @@ summary(aovC)
 
 #### d15N white paper figure ####
 summary$site <- factor(summary$site, levels=c("GOS", "GOS-E"), ordered=T)
+summary$dist_group <- factor(summary$dist_group, levels=c("0-25", "50-75", "100-125", "150-200"), ordered=T)
 scaleFUN <- function(x) sprintf("%.1f", x)
 
-ggplot(data = summary, aes(x = dist_beach, y = meanN)) + 
+ggplot(data = summary, aes(x = dist_group, y = meanN)) + 
   labs(x = "Distance from beach (m)") +
   ylab(expression(paste(delta^{15},'N (\211)'))) +
   geom_errorbar(aes(ymin = meanN-seN, ymax = meanN+seN, colour=site), width=0, size=1.5) + 
@@ -166,9 +170,10 @@ ggplot(data = summary, aes(x = dist_beach, y = meanN)) +
 
 #### d13C white paper figure ####
 summary$site <- factor(summary$site, levels=c("GOS", "GOS-E"), ordered=T)
+summary$dist_group <- factor(summary$dist_group, levels=c("0-25", "50-75", "100-125", "150-200"), ordered=T)
 scaleFUN <- function(x) sprintf("%.1f", x)
 
-ggplot(data = summary, aes(x = dist_beach, y = meanC)) + 
+ggplot(data = summary, aes(x = dist_group, y = meanC)) + 
   labs(x = "Distance from beach (m)") +
   ylab(expression(paste(delta^{13},'C (\211)'))) +
   geom_errorbar(aes(ymin = meanC-seC, ymax = meanC+seC, colour=site), width=0, size=1.5, alpha=0.7) + 
