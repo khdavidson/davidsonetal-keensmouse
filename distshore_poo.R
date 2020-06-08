@@ -1,20 +1,19 @@
 # Mouse faecal trends from shoreline to interior
 # k davidson
 # building on 2015 data may 2020
-# historical script: distancefromshore_isopoo.R
-
+# archival script: distancefromshore_isopoo.R
 
 library(tidyverse)
 library(broom)
 
 setwd("~/UVic/`Hakai 100 Islands 2015/`DATA/Isotopes")
+
 poo.data = read.csv("Tray70bRversion.csv")
 
 ########################################################################################################################################################
 
-#################
-# DATA CLEANING #
-#################
+#                                                             DATA CLEANING 
+
 
 # Although the C:N and other C normalization values were calculated in Excel, I want to re-do here for transparency & reproducibility. 
 # Information used here relies on Post et al 2007 Oecologia 152(1): 179-189
@@ -215,6 +214,8 @@ ggplot(data=poo.summary, aes(x=dist_group, y=meanC)) +
         legend.margin = margin(t=-2,b=4,l=5,r=8)) #+
   #geom_text(data=summary %>% filter(label=="*"), aes(label=label), nudge_x=0, nudge_y=-0.032, colour="white", size=13)
   
+
+
 
 #=========================================================================================== COMBO PLOTS
 
