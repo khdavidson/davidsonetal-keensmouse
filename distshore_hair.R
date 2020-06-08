@@ -1,11 +1,15 @@
-### distance from shore hair 2016! 
+# distance from shore hair 
+# jun 2020 revision
+# 
 
-setwd("~/Documents/`Field Work 2016/`RESULTS/Data files")
+setwd("~/UVic/`Field Work 2016/`RESULTS/Data files")
 hair.data = read.csv("fieldmouse_distshore_hair.csv")
-library(ggplot2)
+
+library(tidyverse)
+
+#######################################################################################################################################################
 
 # create new column for indexing by node 
-
 hair.data$Node = "CV"
 hair.data$Node[hair.data$Region=="GS"]<-"GS"
 
