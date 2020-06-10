@@ -141,7 +141,7 @@ ggplot(data=combo.summary, aes(x=dist_group, y=meanN, group=ID)) +
         axis.text = element_text(size=27, colour="black"),
         axis.ticks = element_line(size=1),
         axis.ticks.length = unit(1.5, "mm"),
-        panel.grid.major = element_blank(),#line(colour="gray80", size=0.8),
+        panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.border = element_rect(size=1.1),
         legend.position = "none")
