@@ -276,11 +276,11 @@ shapiro.test(res2)   # p = 0.07 improved but not awesome
 plot(lm(CPUE_groups_sex$log_cpue ~ CPUE_groups_sex$group))
 
 #####
-# Anova based on location of first capture
+# Anova based on location of first capture -- MS stats
 ##### 
 options(contrasts = c("contr.sum","contr.poly"))
 frstcap_cpue_aov <- aov(CPUE_groups_sex$log_cpue ~ CPUE_groups_sex$group + CPUE_groups_sex$sex)
-aov_unb <- Anova(lm(CPUE_groups_sex$log_cpue ~ CPUE_groups_sex$group + CPUE_groups_sex$sex), type=2)
+aov_unb <- Anova(lm(CPUE_groups_sex$log_cpue ~ CPUE_groups_sex$group + CPUE_groups_sex$sex), type=2)   # no difference between types 2 and 3
 summary(aov_unb)     
 TukeyHSD(aov_unb)
  
@@ -386,19 +386,19 @@ ggplot(avg_propn_groups_sex2, aes(x=group, y=mean_propn_sex, group=Sex)) +
   scale_y_continuous(limits=c(0, 1.0), breaks=seq(0, 1.0, by = 0.2))  +
   scale_fill_manual(values=c("gray20", "gray80")) +
   geom_errorbar(data = avg_propn_groups_sex2, aes(ymin = mean_propn_sex - se_propn_sex,
-                                             ymax = mean_propn_sex + se_propn_sex), width=.09, size=1, colour="black", position=position_dodge(width=0.9))  +
+                                             ymax = mean_propn_sex + se_propn_sex), width=0, size=1, colour="black", position=position_dodge(width=0.9))  +
   labs(x="Distance from beach (m)", y="Proportion of captures") +
   theme_bw() +
   theme(panel.border = element_rect(colour = "black", size=1.2),
         panel.grid.minor = element_blank(),
         panel.grid.major = element_blank(),
         axis.text = element_text(colour = "black", size=30),
-        axis.title.x = element_text(margin = margin(t=6, r=0, b=0, l=0), colour = "black", size=34),
-        axis.title.y = element_text(margin = margin(t=0, r=7, b=0, l=0), colour = "black", size=34),
+        axis.title.x = element_text(margin = margin(t=6, r=0, b=0, l=0), colour = "black", face="bold", size=34),
+        axis.title.y = element_text(margin = margin(t=0, r=7, b=0, l=0), colour = "black", face="bold", size=34),
         axis.ticks = element_line(size = 1, colour = "black"),
         axis.ticks.length = unit(0.2, "cm"),
         legend.text = element_text(size=30),
-        legend.title = element_text(size=34),
+        legend.title = element_blank(),
         legend.position=c(0.86,0.85),
         legend.background = element_rect(colour="black", size=0.8),
         legend.spacing.y = unit(0.1, "cm")) 
