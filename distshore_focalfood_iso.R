@@ -131,6 +131,15 @@ ggplot(data=combo.summary, aes(x=dist_group, y=meanN, group=ID)) +
   geom_line(size=1.1, colour="gray80") +
   geom_errorbar(aes(ymin = meanN-seN, ymax = meanN+seN), colour="black", width=0, size=1.5) + 
   geom_point(aes(shape=ID), fill="gray80", colour="black", size=7, stroke=1.3) +
+  annotate(geom="text", label="a", x=1, y=-0.8, size=10) +
+  annotate(geom="text", label="b", x=2, y=-6.2, size=10) +
+  annotate(geom="text", label="b", x=3, y=-5.7, size=10) +
+  #annotate(geom="text", label="a", x=2, y=-2.5, size=10) +
+  #annotate(geom="text", label="a", x=4, y=-4.5, size=10) +
+  annotate(geom="text", label="a", x=1, y=3, size=10) +
+  annotate(geom="text", label="b", x=2, y=3.3, size=10) +
+  annotate(geom="text", label="ab", x=3, y=3.5, size=10) +
+  annotate(geom="text", label="b", x=4, y=2.7, size=10) +
   scale_shape_manual(values=c("Salal"=23, "Weevil"=22, "Ground beetle"=24)) +
   labs(x = "Distance from beach (m)") +
   ylab(expression(paste(delta^{15},'N (\211)'))) +
@@ -147,7 +156,7 @@ ggplot(data=combo.summary, aes(x=dist_group, y=meanN, group=ID)) +
         legend.position = "none")
 
 
-# ----------------------------- NITROGEN 
+# ----------------------------- CARBON 
 
 scaleFUN <- function(x) sprintf("%.1f", x)
 
@@ -155,6 +164,15 @@ ggplot(data=combo.summary, aes(x=dist_group, y=meanC, group=ID)) +
   geom_errorbar(aes(ymin = meanC-seC, ymax = meanC+seC), colour="black", width=0, size=1.5) + 
   geom_line(size=1.1, colour="gray80") +
   geom_point(aes(shape=ID), fill="gray80", colour="black", size=7, stroke=1.3) +
+  annotate(geom="text", label="a", x=1, y=-28.3, size=10) +
+  annotate(geom="text", label="b", x=2, y=-29.1, size=10) +
+  annotate(geom="text", label="b", x=3, y=-29.7, size=10) +
+  #annotate(geom="text", label="a", x=2, y=-26.3, size=10) +
+  #annotate(geom="text", label="a", x=4, y=-25.9, size=10) +
+  #annotate(geom="text", label="a", x=1, y=-26.1, size=10) +
+  #annotate(geom="text", label="a", x=2, y=-27.2, size=10) +
+  #annotate(geom="text", label="a", x=3, y=-26.9, size=10) +
+  #annotate(geom="text", label="a", x=4, y=-26.6, size=10) +
   scale_shape_manual(values=c("Salal"=23, "Weevil"=22, "Ground beetle"=24)) +
   labs(x = "Distance from beach (m)") +
   ylab(expression(paste(delta^{13},'C (\211)'))) +
