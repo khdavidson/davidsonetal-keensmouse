@@ -244,9 +244,14 @@ combo.summary$source <- factor(combo.summary$source, levels=c("Faeces", "Hair"),
 
 scaleFUN <- function(x) sprintf("%.1f", x)
 
-ggplot(data=combo.summary, aes(x=dist_group, y=meanN)) + 
+ggplot(data=combo.summary, aes(x=dist_group, y=meanN, group=source)) + 
+  geom_line(aes(colour=source), size=1.3) +
   geom_errorbar(aes(ymin=meanN-seN, ymax=meanN+seN, colour=source), width=0, size=1.5) + 
   geom_point(aes(fill=source), colour="black", size=7, stroke=1.3, shape=21) +
+  annotate(geom="text", x=1, y=7, label="a", size=10) + 
+  annotate(geom="text", x=2, y=5.2, label="b", size=10) + 
+  annotate(geom="text", x=3, y=2.7, label="c", size=10) + 
+  annotate(geom="text", x=4, y=1.8, label="c", size=10) + 
   scale_fill_manual(values=c("gray80", "gray20")) +
   scale_colour_manual(values=c("gray80", "gray20")) +
   scale_y_continuous(labels=scaleFUN) +
@@ -269,6 +274,7 @@ ggplot(data=combo.summary, aes(x=dist_group, y=meanN)) +
 scaleFUN <- function(x) sprintf("%.1f", x)
 
 ggplot(data=combo.summary, aes(x=dist_group, y=meanC)) + 
+  geom_line(aes(colour=source), size=1.3) +
   geom_errorbar(aes(ymin=meanC-seC, ymax=meanC+seC, colour=source), width=0, size=1.5) + 
   geom_point(aes(fill=source), colour="black", size=7, stroke=1.3, shape=21) +
   scale_fill_manual(values=c("gray80", "gray20")) +
