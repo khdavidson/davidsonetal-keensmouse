@@ -33,6 +33,28 @@ iso.gbeetle.dat <- iso.dat %>%
 
 ########################################################################################################################################################
 
+#                                                           SUMMARY STATS
+
+# Sample sizes for each focal food item at each distance interval 
+
+# Salal
+iso.salal.dat %>% 
+  group_by(dist_group) %>% 
+  summarize(n=n())
+
+# Weevil
+iso.weevil.dat %>% 
+  group_by(dist_group) %>% 
+  summarize(n=n())
+
+# Ground beetle
+iso.gbeetle.dat %>% 
+  group_by(dist_group) %>% 
+  summarize(n=n())
+
+
+########################################################################################################################################################
+
 
 #                                                           STATISTICAL COMPARISONS
 
