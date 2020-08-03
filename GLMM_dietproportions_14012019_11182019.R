@@ -4,29 +4,28 @@
   
                                 ## MAY ALSO WANT TO CONSIDER REDUCING MODEL SCOPE TO TEST SPECIFIC HYPOTHESES! ##
 
+########################################################################################################################################################
 
-#install.packages("glmmADMB", 
-#                 repos=c("http://glmmadmb.r-forge.r-project.org/repos",
-#                         getOption("repos")),
-#                 type="source")
+setwd("~/UVic/`Field Work 2016/`RESULTS/Data files")
 
-library(dplyr)
+
+library(tidyverse)
 library(devtools)
 library(glmmADMB)
+#install.packages("glmmADMB", repos=c("http://glmmadmb.r-forge.r-project.org/repos", getOption("repos")), type="source")
 library(lme4)
 library(AICcmodavg)
 library(bbmle)
 library(MuMIn)
 
-
-setwd("~/UVic/`Field Work 2016/`RESULTS/Data files")
+########################################################################################################################################################
 
 
 #### STEP 1: CREATE RESPONSE VARIABLE (% intertidal invertebrates)
 
     # This step is not required just a placeholder from residual script. % int invert in diet was manually transferred from MixSIAR output to GLMM database
 
-
+########################################################################################################################################################
 
 
 #### STEP 2: ESTABLISH PREDICTOR VARIABLES (site-level)
@@ -53,8 +52,7 @@ avg_trap <- trapsum %>%
   print(avg_trap)
 
 
-
-
+########################################################################################################################################################
 
 
 #### STEP 3: TEST COLLINEARITY OF PREDICTORS
@@ -96,10 +94,10 @@ library(car)
 vif(full.mm)
 
 
+########################################################################################################################################################
 
 
                                                                       # editing got to here
-
 
 
 #### STEP 4: MODELS 
@@ -176,13 +174,11 @@ vif(full.mm)
 #50. gender + breeding
 
 
-################################################# % PRNINT from MIXSIAR ########################################################################################
+#------------------------------------------------------ % PRNINT from MIXSIAR
 
 
 #data = read.csv("GLMM_database_FINAL_abbrv.csv")
 data = read.csv("GLMM_database_corrected_23012019.csv")
-
-library(glmmADMB)
 
 prop_m1 = glmmadmb(PRNINT_simp ~ 1 + (1|site), data=data, family="beta", link = "logit", debug=F)
 prop_m2 = glmmadmb(PRNINT_simp ~  ii_biom_rs + (1|site), data=data, family="beta", link = "logit", debug=F)
@@ -296,7 +292,14 @@ top.comp.models.95 <- get.models(top.set, cumsum(weight)<=0.95)
 modavg.95 <- model.avg(top.comp.models.95)
 summary(modavg.95)
 
+# all model parameter estimates 
 write.csv(top.set, "AICc_model_selection_table_dec72019_propnmods.csv")
+
+# model-averaged parameter estimates
+modavg.95.table <- coefTable(modavg.95, full=TRUE)
+modavg.95.df <- data.frame(modavg.95.table)
+
+write.csv(modavg.95.df, "params_full_model_averaged_propnmods.csv")
 
 # Select top models dAIC <2
 #top.comp.models.d2 <- get.models(top.set, delta<2)
@@ -335,285 +338,41 @@ perc <- data %>%
   summarize(avg = mean(PRNINT_simp), sd=sd(PRNINT_simp)) %>% 
   print()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ##############################################################################################################################################################
-
-
-
-
-
-######################################################### C13 MODELS ########################################################################################
-
-
-
-#data = read.csv("GLMM_database_FINAL_abbrv.csv")
-data = read.csv("GLMM_database_corrected_23012019.csv")
-
-
-
-C_m1 = lmer(mouse_d13C ~ 1 + (1|site), data=data)
-C_m2 = lmer(mouse_d13C ~  ii_biom_rs + (1|site), data=data)
-r2 <- resid(C_m2)
-hist(r2)
-plot(r2)
-qqnorm(r2)
-qqline(r2)
-
-C_m3 = lmer(mouse_d13C ~  ti_biom_trap_rs + (1|site), data=data)
-C_m4 = lmer(mouse_d13C ~  ti_biom_site_rs + (1|site), data=data)
-C_m5 = lmer(mouse_d13C ~  NDVI_trap_rs + (1|site), data=data)
-C_m6 = lmer(mouse_d13C ~  NDVI_site_rs + (1|site), data=data)
-C_m7 = lmer(mouse_d13C ~  gn + (1|site), data=data)
-C_m8 = lmer(mouse_d13C ~  bs + (1|site), data=data)
-C_m9 = lmer(mouse_d13C ~  gn*bs + (1|site), data=data)
-
-C_m10 = lmer(mouse_d13C ~  NDVI_trap_rs + ti_biom_site_rs + (1|site), data=data)
-C_m11 = lmer(mouse_d13C ~  NDVI_trap_rs + ii_biom_rs + (1|site), data=data)
-C_m12 = lmer(mouse_d13C ~  NDVI_trap_rs + gn + (1|site), data=data)
-C_m13 = lmer(mouse_d13C ~  NDVI_trap_rs + bs + (1|site), data=data)
-C_m14 = lmer(mouse_d13C ~  NDVI_trap_rs + gn*bs + (1|site), data=data)
-
-C_m15 = lmer(mouse_d13C ~  NDVI_trap_rs + ti_biom_site_rs + gn + (1|site), data=data)
-C_m16 = lmer(mouse_d13C ~  NDVI_trap_rs + ti_biom_site_rs + bs + (1|site), data=data)
-#C_m17 = lmer(mouse_d13C ~  NDVI_trap_rs + ti_biom_site_rs + gn*bs + (1|site), data=data)
-#C_m18 = lmer(mouse_d13C ~  NDVI_trap_rs + ti_biom_site_rs + gn + bs + (1|site), data=data)
-
-C_m19 = lmer(mouse_d13C ~  NDVI_trap_rs + ii_biom_rs + gn + (1|site), data=data)
-C_m20 = lmer(mouse_d13C ~  NDVI_trap_rs + ii_biom_rs + bs + (1|site), data=data)
-#C_m21 = lmer(mouse_d13C ~  NDVI_trap_rs + ii_biom_rs + gn*bs + (1|site), data=data)
-#C_m22 = lmer(mouse_d13C ~  NDVI_trap_rs + ii_biom_rs + gn + bs + (1|site), data=data)
-
-C_m23 = lmer(mouse_d13C ~  NDVI_trap_rs + gn + bs + (1|site), data=data)
-
-C_m24 = lmer(mouse_d13C ~  NDVI_site_rs + ii_biom_rs + (1|site), data=data)
-C_m25 = lmer(mouse_d13C ~  NDVI_site_rs + gn + (1|site), data=data)
-C_m26 = lmer(mouse_d13C ~  NDVI_site_rs + bs + (1|site), data=data)
-C_m27 = lmer(mouse_d13C ~  NDVI_site_rs + gn*bs + (1|site), data=data)
-C_m28 = lmer(mouse_d13C ~  NDVI_site_rs + gn + bs + (1|site), data=data)
-
-C_m29 = lmer(mouse_d13C ~  NDVI_site_rs + ii_biom_rs + gn + (1|site), data=data)
-C_m30 = lmer(mouse_d13C ~  NDVI_site_rs + ii_biom_rs + bs + (1|site), data=data)
-#C_m31 = lmer(mouse_d13C ~  NDVI_site_rs + ii_biom_rs + gn*bs + (1|site), data=data)
-#C_m32 = lmer(mouse_d13C ~  NDVI_site_rs + ii_biom_rs + gn + bs + (1|site), data=data)
-
-C_m33 = lmer(mouse_d13C ~  ti_biom_trap_rs + gn + (1|site), data=data)
-C_m34 = lmer(mouse_d13C ~  ti_biom_trap_rs + bs + (1|site), data=data)
-C_m35 = lmer(mouse_d13C ~  ti_biom_trap_rs + gn*bs + (1|site), data=data)
-C_m36 = lmer(mouse_d13C ~  ti_biom_trap_rs + gn + bs + (1|site), data=data)
-
-C_m37 = lmer(mouse_d13C ~  ti_biom_trap_rs + ii_biom_rs + (1|site), data=data)
-C_m38 = lmer(mouse_d13C ~  ti_biom_trap_rs + ii_biom_rs + gn + (1|site), data=data)
-C_m39 = lmer(mouse_d13C ~  ti_biom_trap_rs + ii_biom_rs + bs + (1|site), data=data)
-#C_m40 = lmer(mouse_d13C ~  ti_biom_trap_rs + ii_biom_rs + gn*bs + (1|site), data=data)
-#C_m41 = lmer(mouse_d13C ~  ti_biom_trap_rs + ii_biom_rs + gn + bs + (1|site), data=data)
-
-C_m42 = lmer(mouse_d13C ~  ti_biom_site_rs + gn + (1|site), data=data)
-C_m43 = lmer(mouse_d13C ~  ti_biom_site_rs + bs + (1|site), data=data)
-C_m44 = lmer(mouse_d13C ~  ti_biom_site_rs + gn*bs + (1|site), data=data)
-C_m45 = lmer(mouse_d13C ~  ti_biom_site_rs + gn + bs + (1|site), data=data)
-
-C_m46 = lmer(mouse_d13C ~  ii_biom_rs + gn + (1|site), data=data)
-C_m47 = lmer(mouse_d13C ~  ii_biom_rs + bs + (1|site), data=data)
-C_m48 = lmer(mouse_d13C ~  ii_biom_rs + gn*bs + (1|site), data=data)
-C_m49 = lmer(mouse_d13C ~  ii_biom_rs + gn + bs + (1|site), data=data)
-
-C_m50 = lmer(mouse_d13C ~  gn + bs + (1|site), data=data)
-
-
-
-
-#### STEP 5: COMPETE MODELS 
-
-# models 17,18,21,22,31,32,40,41 removed
-AICc(C_m1, C_m2, C_m3, C_m4, C_m5, C_m6, C_m7, C_m8, C_m9, C_m10,
-     C_m11, C_m12, C_m13, C_m14, C_m15, C_m16, C_m19, C_m20,
-     C_m23, C_m24, C_m25, C_m26, C_m27, C_m28, C_m29, C_m30, 
-     C_m33, C_m34, C_m35, C_m36, C_m37, C_m38, C_m39,
-     C_m42, C_m43, C_m44, C_m45, C_m46, C_m47, C_m48, C_m49, C_m50)
-anova(C_m1, C_m2, C_m3, C_m4, C_m5, C_m6, C_m7, C_m8, C_m9, C_m10,
-      C_m11, C_m12, C_m13, C_m14, C_m15, C_m16, C_m19, C_m20,
-      C_m23, C_m24, C_m25, C_m26, C_m27, C_m28, C_m29, C_m30, 
-      C_m33, C_m34, C_m35, C_m36, C_m37, C_m38, C_m39,
-      C_m42, C_m43, C_m44, C_m45, C_m46, C_m47, C_m48, C_m49, C_m50)
-
-# AIC comparison table - models 17,18,21,22,31,32,40,41 removed
-cand.models.C <- list(C_m1, C_m2, C_m3, C_m4, C_m5, C_m6, C_m7, C_m8, C_m9, C_m10,
-                    C_m11, C_m12, C_m13, C_m14, C_m15, C_m16, C_m19, C_m20,
-                    C_m23, C_m24, C_m25, C_m26, C_m27, C_m28, C_m29, C_m30, 
-                    C_m33, C_m34, C_m35, C_m36, C_m37, C_m38, C_m39,
-                    C_m42, C_m43, C_m44, C_m45, C_m46, C_m47, C_m48, C_m49, C_m50)
-cand.names.C <- c("C_m1", "C_m2", "C_m3", "C_m4", "C_m5", "C_m6", "C_m7", "C_m8", "C_m9", "C_m10",
-                "C_m11", "C_m12", "C_m13", "C_m14", "C_m15", "C_m16", "C_m19", "C_m20",
-                "C_m23", "C_m24", "C_m25", "C_m26", "C_m27", "C_m28", "C_m29", "C_m30", 
-                "C_m33", "C_m34", "C_m35", "C_m36", "C_m37", "C_m38", "C_m39",
-                "C_m42", "C_m43", "C_m44", "C_m45", "C_m46", "C_m47", "C_m48", "C_m49", "C_m50")
-
-# Make a table of all AIC vals w weights - models 17,18,21,22,31,32,40,41 removed
-t.C <- AICctab(C_m1, C_m2, C_m3, C_m4, C_m5, C_m6, C_m7, C_m8, C_m9, C_m10,
-             C_m11, C_m12, C_m13, C_m14, C_m15, C_m16, C_m19, C_m20,
-             C_m23, C_m24, C_m25, C_m26, C_m27, C_m28, C_m29, C_m30, 
-             C_m33, C_m34, C_m35, C_m36, C_m37, C_m38, C_m39,
-             C_m42, C_m43, C_m44, C_m45, C_m46, C_m47, C_m48, C_m49, C_m50, 
-             nobs=44,logLik=T, base=T, weights=T, delta=T, sort=T)
-print(t.C)
-class(t.C) <- "data.frame"
-write.csv(t.C, "AIC_table_dec72019_Cmodels.csv", row.names = T)
-
-# Select top models 95% model weight
-top.set.C <- model.sel(cand.models.C)
-top.comp.models.95.C <- get.models(top.set.C, cumsum(weight)<=0.95)
-modavg.95.C <- model.avg(top.comp.models.95.C)
-summary(modavg.95.C)
-
-write.csv(top.set.C, "AICc_model_selection_table_dec72019_Cmodels.csv")
-
-
-
-######################################################### N15 MODELS ########################################################################################
-
-
-
-#data = read.csv("GLMM_database_FINAL_abbrv.csv")
-data = read.csv("GLMM_database_corrected_23012019.csv")
-
-
-
-N_m1 = lmer(mouse_d15N ~ 1 + (1|site), data=data)
-N_m2 = lmer(mouse_d15N ~  ii_biom_rs + (1|site), data=data)
-r2 <- resid(N_m2)
-hist(r2)
-plot(r2)
-qqnorm(r2)
-qqline(r2)
-
-N_m3 = lmer(mouse_d15N ~  ti_biom_trap_rs + (1|site), data=data)
-N_m4 = lmer(mouse_d15N ~  ti_biom_site_rs + (1|site), data=data)
-N_m5 = lmer(mouse_d15N ~  NDVI_trap_rs + (1|site), data=data)
-N_m6 = lmer(mouse_d15N ~  NDVI_site_rs + (1|site), data=data)
-N_m7 = lmer(mouse_d15N ~  gn + (1|site), data=data)
-N_m8 = lmer(mouse_d15N ~  bs + (1|site), data=data)
-N_m9 = lmer(mouse_d15N ~  gn*bs + (1|site), data=data)
-
-N_m10 = lmer(mouse_d15N ~  NDVI_trap_rs + ti_biom_site_rs + (1|site), data=data)
-N_m11 = lmer(mouse_d15N ~  NDVI_trap_rs + ii_biom_rs + (1|site), data=data)
-N_m12 = lmer(mouse_d15N ~  NDVI_trap_rs + gn + (1|site), data=data)
-N_m13 = lmer(mouse_d15N ~  NDVI_trap_rs + bs + (1|site), data=data)
-N_m14 = lmer(mouse_d15N ~  NDVI_trap_rs + gn*bs + (1|site), data=data)
-
-N_m15 = lmer(mouse_d15N ~  NDVI_trap_rs + ti_biom_site_rs + gn + (1|site), data=data)
-N_m16 = lmer(mouse_d15N ~  NDVI_trap_rs + ti_biom_site_rs + bs + (1|site), data=data)
-#N_m17 = lmer(mouse_d15N ~  NDVI_trap_rs + ti_biom_site_rs + gn*bs + (1|site), data=data)
-#N_m18 = lmer(mouse_d15N ~  NDVI_trap_rs + ti_biom_site_rs + gn + bs + (1|site), data=data)
-
-N_m19 = lmer(mouse_d15N ~  NDVI_trap_rs + ii_biom_rs + gn + (1|site), data=data)
-N_m20 = lmer(mouse_d15N ~  NDVI_trap_rs + ii_biom_rs + bs + (1|site), data=data)
-#N_m21 = lmer(mouse_d15N ~  NDVI_trap_rs + ii_biom_rs + gn*bs + (1|site), data=data)
-#N_m22 = lmer(mouse_d15N ~  NDVI_trap_rs + ii_biom_rs + gn + bs + (1|site), data=data)
-
-N_m23 = lmer(mouse_d15N ~  NDVI_trap_rs + gn + bs + (1|site), data=data)
-
-N_m24 = lmer(mouse_d15N ~  NDVI_site_rs + ii_biom_rs + (1|site), data=data)
-N_m25 = lmer(mouse_d15N ~  NDVI_site_rs + gn + (1|site), data=data)
-N_m26 = lmer(mouse_d15N ~  NDVI_site_rs + bs + (1|site), data=data)
-N_m27 = lmer(mouse_d15N ~  NDVI_site_rs + gn*bs + (1|site), data=data)
-N_m28 = lmer(mouse_d15N ~  NDVI_site_rs + gn + bs + (1|site), data=data)
-
-N_m29 = lmer(mouse_d15N ~  NDVI_site_rs + ii_biom_rs + gn + (1|site), data=data)
-N_m30 = lmer(mouse_d15N ~  NDVI_site_rs + ii_biom_rs + bs + (1|site), data=data)
-#N_m31 = lmer(mouse_d15N ~  NDVI_site_rs + ii_biom_rs + gn*bs + (1|site), data=data)
-#N_m32 = lmer(mouse_d15N ~  NDVI_site_rs + ii_biom_rs + gn + bs + (1|site), data=data)
-
-N_m33 = lmer(mouse_d15N ~  ti_biom_trap_rs + gn + (1|site), data=data)
-N_m34 = lmer(mouse_d15N ~  ti_biom_trap_rs + bs + (1|site), data=data)
-N_m35 = lmer(mouse_d15N ~  ti_biom_trap_rs + gn*bs + (1|site), data=data)
-N_m36 = lmer(mouse_d15N ~  ti_biom_trap_rs + gn + bs + (1|site), data=data)
-
-N_m37 = lmer(mouse_d15N ~  ti_biom_trap_rs + ii_biom_rs + (1|site), data=data)
-N_m38 = lmer(mouse_d15N ~  ti_biom_trap_rs + ii_biom_rs + gn + (1|site), data=data)
-N_m39 = lmer(mouse_d15N ~  ti_biom_trap_rs + ii_biom_rs + bs + (1|site), data=data)
-#N_m40 = lmer(mouse_d15N ~  ti_biom_trap_rs + ii_biom_rs + gn*bs + (1|site), data=data)
-#N_m41 = lmer(mouse_d15N ~  ti_biom_trap_rs + ii_biom_rs + gn + bs + (1|site), data=data)
-
-N_m42 = lmer(mouse_d15N ~  ti_biom_site_rs + gn + (1|site), data=data)
-N_m43 = lmer(mouse_d15N ~  ti_biom_site_rs + bs + (1|site), data=data)
-N_m44 = lmer(mouse_d15N ~  ti_biom_site_rs + gn*bs + (1|site), data=data)
-N_m45 = lmer(mouse_d15N ~  ti_biom_site_rs + gn + bs + (1|site), data=data)
-
-N_m46 = lmer(mouse_d15N ~  ii_biom_rs + gn + (1|site), data=data)
-N_m47 = lmer(mouse_d15N ~  ii_biom_rs + bs + (1|site), data=data)
-N_m48 = lmer(mouse_d15N ~  ii_biom_rs + gn*bs + (1|site), data=data)
-N_m49 = lmer(mouse_d15N ~  ii_biom_rs + gn + bs + (1|site), data=data)
-
-N_m50 = lmer(mouse_d15N ~  gn + bs + (1|site), data=data)
-
-
-
-
-#### STEP 5: COMPETE MODELS 
-
-# models 17,18,21,22,31,32,40,41 removed
-AICc(N_m1, N_m2, N_m3, N_m4, N_m5, N_m6, N_m7, N_m8, N_m9, N_m10,
-     N_m11, N_m12, N_m13, N_m14, N_m15, N_m16, N_m19, N_m20,
-     N_m23, N_m24, N_m25, N_m26, N_m27, N_m28, N_m29, N_m30, 
-     N_m33, N_m34, N_m35, N_m36, N_m37, N_m38, N_m39,
-     N_m42, N_m43, N_m44, N_m45, N_m46, N_m47, N_m48, N_m49, N_m50)
-anova(N_m1, N_m2, N_m3, N_m4, N_m5, N_m6, N_m7, N_m8, N_m9, N_m10,
-      N_m11, N_m12, N_m13, N_m14, N_m15, N_m16, N_m19, N_m20,
-      N_m23, N_m24, N_m25, N_m26, N_m27, N_m28, N_m29, N_m30, 
-      N_m33, N_m34, N_m35, N_m36, N_m37, N_m38, N_m39,
-      N_m42, N_m43, N_m44, N_m45, N_m46, N_m47, N_m48, N_m49, N_m50)
-
-# AIC comparison table - models 17,18,21,22,31,32,40,41 removed
-cand.models.N <- list(N_m1, N_m2, N_m3, N_m4, N_m5, N_m6, N_m7, N_m8, N_m9, N_m10,
-                      N_m11, N_m12, N_m13, N_m14, N_m15, N_m16, N_m19, N_m20,
-                      N_m23, N_m24, N_m25, N_m26, N_m27, N_m28, N_m29, N_m30, 
-                      N_m33, N_m34, N_m35, N_m36, N_m37, N_m38, N_m39,
-                      N_m42, N_m43, N_m44, N_m45, N_m46, N_m47, N_m48, N_m49, N_m50)
-cand.names.N <- c("N_m1", "N_m2", "N_m3", "N_m4", "N_m5", "N_m6", "N_m7", "N_m8", "N_m9", "N_m10",
-                  "N_m11", "N_m12", "N_m13", "N_m14", "N_m15", "N_m16", "N_m19", "N_m20",
-                  "N_m23", "N_m24", "N_m25", "N_m26", "N_m27", "N_m28", "N_m29", "N_m30", 
-                  "N_m33", "N_m34", "N_m35", "N_m36", "N_m37", "N_m38", "N_m39",
-                  "N_m42", "N_m43", "N_m44", "N_m45", "N_m46", "N_m47", "N_m48", "N_m49", "N_m50")
-
-# Make a table of all AIC vals w weights - models 17,18,21,22,31,32,40,41 removed
-t.N <- AICctab(N_m1, N_m2, N_m3, N_m4, N_m5, N_m6, N_m7, N_m8, N_m9, N_m10,
-               N_m11, N_m12, N_m13, N_m14, N_m15, N_m16, N_m19, N_m20,
-               N_m23, N_m24, N_m25, N_m26, N_m27, N_m28, N_m29, N_m30, 
-               N_m33, N_m34, N_m35, N_m36, N_m37, N_m38, N_m39,
-               N_m42, N_m43, N_m44, N_m45, N_m46, N_m47, N_m48, N_m49, N_m50, 
-               nobs=44,logLik=T, base=T, weights=T, delta=T, sort=T)
-print(t.N)
-class(t.N) <- "data.frame"
-write.csv(t.N, "AIC_table_dec72019_Nmodels.csv", row.names = T)
-
-# Select top models 95% model weight
-top.set.N <- model.sel(cand.models.N)
-top.Nomp.models.95.N <- get.models(top.set.N, cumsum(weight)<=0.95)
-modavg.95.N <- model.avg(top.Nomp.models.95.N)
-summary(modavg.95.N)
-
-write.csv(top.set.N, "AICc_model_selection_table_dec72019_Nmodels.csv")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# old code for reference below - not in MS version 
 
 
 
