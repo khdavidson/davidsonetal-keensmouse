@@ -17,12 +17,7 @@ Most code files are still messy and not fully annotated, and call intermediate t
 - Simple food groups for MixSIAR: region_foodgroups_11232019.R
 - Isospace figure: isospace_plot_2020.R *new*
 - Final MixSIAR models: mixsiar_new_6nov17.R includes models for both CV and GS. Note: output files are saved in `RESULTS>Data files> summary_CV_model_IND_xt and summary_GS_model_IND_xt (and variations on that name like ‘diagnostics’ instead of ‘summary’) 
-- GLMM for MixSIAR: GLMM_dietproportions_14012019_11182019.R
+- GLMM for MixSIAR (median 50% estimate response var): GLMM_dietproportions_14012019_11182019.R
+- 'Sensitivity' GLMM for MixSIAR (5% and 95% CI response var) and LMM for d13C and d15N: GLMM_sensitivity.R 
 - NDVI adjacent trap calculations: NDVI_adjcalcs.R
 - TAB adjacent trap calculations: TAB_adjcalcs.R
-
-
-
-
-
-
