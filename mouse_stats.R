@@ -1,9 +1,80 @@
 
-#### Basic mouse ecology comparisons 
+# Basic mouse ecology comparisons - some of this used in MS and some not. 
+# slightly revised Aug 2020
 
-setwd("~/Documents/`Field Work 2016/`RESULTS/Data files")
+########################################################################################################################################################
+
+setwd("~/UVic/`Field Work 2016/`RESULTS/Data files")
+
 ltdat <- read.csv("Livetraps_subset.csv")
-library(dplyr)
+
+library(tidyverse)
+library(broom)
+library(dunn.test)
+
+########################################################################################################################################################
+
+#                                                          DATA CLEANING
+
+mice <- ltdat %>% 
+  filter(Spp != "SORE", Age == "A") %>%
+  mutate(dist_group = ifelse(Dist_Shore==0 | Dist_Shore==25, "0-25",
+                             ifelse(Dist_Shore==50 | Dist_Shore==75, "50-75",
+                                    ifelse(Dist_Shore==100 | Dist_Shore==125, "100-125", "150-200")))) %>%
+  print()
+  
+########################################################################################################################################################
+
+#                                                          BODY MASS COMPARISONS
+
+# Change in body mass moving inland for males and females 
+
+
+#---------------- Males 
+mice.m <- mice %>% 
+  filter(Sex=="M") %>% 
+  #summarize(n=n()) %>%   # n = 35
+  print()
+
+lm.bm <- lm(log10(mice.m$Final_wgt) ~ mice.m$dist_group)
+r.bm <- resid(lm.bm)
+hist(r.bm)
+plot(r.bm)
+qqnorm(r.bm)
+qqline(r.bm)
+plot(lm.bm)
+# non-normal even with log10 and log transformation, will use non-parametric
+
+kruskal.test(mice.m$Final_wgt ~ mice.m$dist_group)
+
+
+
+#---------------- Females 
+mice.f <- mice %>% 
+  filter(Sex=="F") %>% 
+  #summarize(n=n()) %>%   n=19
+  print()
+
+lm.bf <- lm(mice.f$Final_wgt ~ mice.f$dist_group)
+r.bf <- resid(lm.bf)
+hist(r.bf)
+plot(r.bf)
+qqnorm(r.bf)
+qqline(r.bf)
+plot(lm.bf)
+# non-normal even with log10 and log transformation, will use non-parametric
+
+kruskal.test(mice.f$Final_wgt ~ mice.f$dist_group)
+
+
+########################################################################################################################################################
+
+# OLD STUFF BELOW
+
+
+
+
+
 
 ## just going to do proportions for now - averaged across sites within regions 
 
@@ -65,7 +136,7 @@ breedreg <- breed %>%
 
 
 
-######################################################## body mass 
+######################################################## body mass (OLD)
 # use bcsub subset of just non-reproductive adults (previously subsetted in "bodycondition" script)
 bcsub <- read.csv("bcsub.csv")
 # by site 
