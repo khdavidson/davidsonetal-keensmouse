@@ -237,7 +237,7 @@ plot(lm(propn_groups_sex$asin_propn ~ propn_groups_sex$group + propn_groups_sex$
 # arcsine doesn't really change anything and original raw proportion data were OK, so maintain that
 
 #####
-# Two-way Anova based on location of first capture
+# Two-way Anova based on location of first capture  **MS stats**
 ##### 
 options(contrasts = c("contr.sum","contr.poly"))
 propn_groups_sex$sex <- as.factor(propn_groups_sex$sex)
@@ -276,7 +276,7 @@ shapiro.test(res2)   # p = 0.07 improved but not awesome
 plot(lm(CPUE_groups_sex$log_cpue ~ CPUE_groups_sex$group))
 
 #####
-# Anova based on location of first capture -- MS stats
+# Anova based on location of first capture 
 ##### 
 options(contrasts = c("contr.sum","contr.poly"))
 frstcap_cpue_aov <- aov(CPUE_groups_sex$log_cpue ~ CPUE_groups_sex$group + CPUE_groups_sex$sex)
