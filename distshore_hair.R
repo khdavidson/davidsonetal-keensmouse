@@ -223,9 +223,13 @@ ggplot(data=combo.summary, aes(x=dist_group, y=meanC, group=source)) +
   geom_line(aes(colour=source), size=1.3) +
   geom_errorbar(aes(ymin=meanC-seC, ymax=meanC+seC, colour=source), width=0, size=1.5) + 
   geom_point(aes(fill=source), colour="black", size=7, stroke=1.3, shape=21) +
+  annotate(geom="text", x=1, y=-19.6, label="ab", size=10) + 
+  annotate(geom="text", x=2, y=-18.7, label="ab", size=10) + 
+  annotate(geom="text", x=3, y=-19.3, label="a", size=10) + 
+  annotate(geom="text", x=4, y=-17.7, label="b", size=10) + 
   scale_fill_manual(values=c("gray80", "gray20")) +
   scale_colour_manual(values=c("gray80", "gray20")) +
-  scale_y_continuous(labels=scaleFUN) +
+  scale_y_continuous(labels=scaleFUN, breaks=seq(-28,-16, by=2)) +
   labs(x = "Distance from beach (m)") +
   ylab(expression(paste(delta^{13},'C (\211)'))) +
   theme_bw() +
@@ -239,14 +243,11 @@ ggplot(data=combo.summary, aes(x=dist_group, y=meanC, group=source)) +
         panel.border = element_rect(size=1.1),
         legend.text = element_text(size=27), 
         legend.title = element_blank(),
-        legend.position = c(0.15,0.86),
+        legend.position = c(0.15,0.15),
         legend.background = element_rect(colour="black", size=0.8),
         legend.key.size = unit(10, "mm"),
         legend.margin = margin(t=-2,b=4,l=5,r=8)) 
-
-
-
-
+#
 
 
 
