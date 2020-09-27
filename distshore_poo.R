@@ -83,6 +83,9 @@ C_lms <- poo.data %>%
 # this extra site was included. 
 
 
+#######################################################################################################################################################
+
+#                                                           LIPID NORMALIZATION
 
 ##################
 # C:N over space #
@@ -91,15 +94,33 @@ C_lms <- poo.data %>%
 ggplot(poo.data, aes(x=dist_beach, y=CN_ratio)) +
   geom_point()
 
-lm_cn <- lm(poo.data$CN_ratio ~ poo.data$dist_beach)
-rcn <- resid(lm_cn)
-hist(rcn)
-qqnorm(rcn)
-qqline(rcn)
-aov_cn <- aov(poo.data$CN_ratio ~ poo.data$dist_beach)
-summary(aov_cn)
-# no pattern/significance really 
+# some evidence of decline and increase... seems to be a slight pattern. 
 
+max(poo.data$CN_ratio)  # 14.3
+min(poo.data$CN_ratio)  # 8.8
+
+# As C:N ratios are relatively high (> 4) and there seems to be a pattern/variability in C:N over space, will correct for lipid content as per 
+# Post et al 2007. Following approximate guidelines for aquatic animals, but using terrestrial animal equations: 
+
+
+####################
+# LIPID CORRECTION #
+####################
+
+# FOR AQUATIC ORGANISMS:
+# d13Cnorm = d13Cuntreated + Dd13C    therefore
+# d13Cnorm = d13Cuntreated - 3.32 + 0.99 * C:N
+
+# FOR TERRESTRIAL ANIMALS then would be: 
+# d13cnorm = d13Cuntreated + Dd13C    therefore
+# d13Cnorm = d13Cuntreated - 3.44 + 1.00 * C:N  (Equation 6, Post et al 2007. Note: only explained 25% of variance)
+
+poo.data <- poo.data %>% 
+  mutate(d13C_norm = d13C-3.44+1*CN_ratio) %>% 
+  print()
+
+ggplot(poo.data, aes(x=dist_group, y=d13C_norm)) +
+  geom_point()
 
 
 #######################################################################################################################################################
@@ -123,14 +144,15 @@ TukeyHSD(aovN)
 
 # ----------------------------- CARBON 
 
-lmC <- lm(poo.data$d13C ~ poo.data$dist_group)
-aovC <- aov(poo.data$d13C ~ poo.data$dist_group)
+lmC <- lm(poo.data$d13C_norm ~ poo.data$dist_group)
+aovC <- aov(poo.data$d13C_norm ~ poo.data$dist_group)
 rC <- resid(lmC)
 hist(rC)
 qqnorm(rC)
 qqline(rC)
 summary(lmC)
 summary(aovC)
+TukeyHSD(aovC)
 
 
 #######################################################################################################################################################
@@ -142,7 +164,7 @@ summary(aovC)
 # Summarize mean +/- SE for each site (i.e., substrate) -- for plotting only 
 poo.summary <- poo.data %>% 
   group_by(dist_group) %>% 
-  summarize(meanC = mean(d13C), seC = sd(d13C)/sqrt(length(d13C)), 
+  summarize(meanC = mean(d13C_norm), seC = sd(d13C_norm)/sqrt(length(d13C_norm)), 
             meanN = mean(d15N), seN = sd(d15N)/sqrt(length(d15N)),
             n=n()) %>% 
  #mutate(label = ifelse(n==1, "*", "")) %>%
@@ -220,7 +242,8 @@ ggplot(data=poo.summary, aes(x=dist_group, y=meanC)) +
 #=========================================================================================== COMBO PLOTS
 
 # Combo plots of HAIR + POO
-# must have distshore_hair script open and have ran all of the intermediate tables prior to re-making these plots
+
+# **IMPORTANT: must have distshore_hair script open and have ran all of the intermediate tables prior to re-making these plots
 # data to use for hair: hair.summary     for poo: poo.summary
 # this is also duplicatedin the distshore_poo script
 
@@ -273,13 +296,13 @@ ggplot(data=combo.summary, aes(x=dist_group, y=meanN, group=source)) +
 
 scaleFUN <- function(x) sprintf("%.1f", x)
 
-ggplot(data=combo.summary, aes(x=dist_group, y=meanC)) + 
+ggplot(data=combo.summary, aes(x=dist_group, y=meanC, group=source)) + 
   geom_line(aes(colour=source), size=1.3) +
   geom_errorbar(aes(ymin=meanC-seC, ymax=meanC+seC, colour=source), width=0, size=1.5) + 
   geom_point(aes(fill=source), colour="black", size=7, stroke=1.3, shape=21) +
   scale_fill_manual(values=c("gray80", "gray20")) +
   scale_colour_manual(values=c("gray80", "gray20")) +
-  scale_y_continuous(labels=scaleFUN) +
+  scale_y_continuous(labels=scaleFUN, breaks=seq(-28,-16, by=2)) +
   labs(x = "Distance from beach (m)") +
   ylab(expression(paste(delta^{13},'C (\211)'))) +
   theme_bw() +
@@ -293,7 +316,7 @@ ggplot(data=combo.summary, aes(x=dist_group, y=meanC)) +
         panel.border = element_rect(size=1.1),
         legend.text = element_text(size=27), 
         legend.title = element_blank(),
-        legend.position = c(0.15,0.86),
+        legend.position = c(0.15,0.15),
         legend.background = element_rect(colour="black", size=0.8),
         legend.key.size = unit(10, "mm"),
         legend.margin = margin(t=-2,b=4,l=5,r=8)) 
