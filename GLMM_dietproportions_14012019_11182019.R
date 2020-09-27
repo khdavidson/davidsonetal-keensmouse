@@ -315,16 +315,21 @@ write.csv(modavg.95.df, "params_full_model_averaged_propnmods.csv")
 
 # Some extra summary statistics, figures to help with interpretation and writing this section for manuscript 
 
-library(ggplot2)
-
-# % marine food ~ distance from shore 
+#--------------- % marine food ~ distance from shore 
 data$dist_class <- factor(data$dist_class, levels=c("0-25", "50-75", "100-125", "150-200", ordered=T))
 
 ggplot(data=data, aes(x=dist_class, y=PRNINT)) +
   geom_point()
 
+#--------------- NDVI ~ distance from shore
+ggplot(data, aes(x=dist_class, y=NDVI_trap)) +
+  geom_point()
 
-# Average +/- SE % food in diet, range, etc. 
+#--------------- NDVI ~ site
+ggplot(data, aes(x=site, y=NDVI_site)) +
+  geom_point()
+
+#--------------- Average +/- SE % food in diet, range, etc. 
 mean(data$PRNINT)
 sd(data$PRNINT)/sqrt(length(data$PRNINT))
 min(data$PRNINT)
@@ -332,12 +337,11 @@ max(data$PRNINT)
 median(data$PRNINT)
 
 
-# % BAB in diets 
+#--------------- % BAB in diets 
 perc <- data %>% 
   group_by(region,gn) %>% 
   summarize(avg = mean(PRNINT_simp), sd=sd(PRNINT_simp)) %>% 
   print()
-
 
 
 
