@@ -239,14 +239,18 @@ ggplot(data=combo.summary, aes(x=dist_group, y=meanN, group=ID)) +
   annotate(geom="text", label="b", x=3, y=-5.7, size=10) +
   #annotate(geom="text", label="a", x=2, y=-2.5, size=10) +
   #annotate(geom="text", label="a", x=4, y=-4.5, size=10) +
-  annotate(geom="text", label="a", x=1, y=3, size=10) +
+  annotate(geom="text", label="a", x=1, y=4.5, size=10) +
   annotate(geom="text", label="b", x=2, y=3.3, size=10) +
   annotate(geom="text", label="ab", x=3, y=3.5, size=10) +
   annotate(geom="text", label="b", x=4, y=2.7, size=10) +
+  annotate(geom="text", x=0.55, y=4.7, label="A", size=11) + 
+  geom_text(data=combo.summary%>%filter(ID=="Salal"), aes(label=n), hjust=1.2, vjust=1.4, size=8, colour="gray35") +
+  geom_text(data=combo.summary%>%filter(ID=="Weevil"), aes(label=n), hjust=-0.4, vjust=-0.6, size=8, colour="gray35") +
+  geom_text(data=combo.summary%>%filter(ID=="Ground beetle"), aes(label=n), hjust=1.2, vjust=1.6, size=8, colour="gray35") +
   scale_shape_manual(values=c("Salal"=23, "Weevil"=22, "Ground beetle"=24)) +
   labs(x = "Distance from beach (m)") +
   ylab(expression(paste(delta^{15},'N (\211)'))) +
-  scale_y_continuous(labels=scaleFUN) +
+  scale_y_continuous(labels=scaleFUN, limits=c(-7,4.7), breaks=seq(-6,4.5,by=2)) +
   theme_bw() +
   theme(axis.title = element_text(size=30, face = "bold"),
         axis.title.y = element_text(margin=margin(t=2,l=0,r=4,b=0)),
@@ -276,6 +280,7 @@ ggplot(data=combo.summary, aes(x=dist_group, y=meanC, group=ID)) +
   #annotate(geom="text", label="a", x=2, y=-27.2, size=10) +
   #annotate(geom="text", label="a", x=3, y=-26.9, size=10) +
   #annotate(geom="text", label="a", x=4, y=-26.6, size=10) +
+  annotate(geom="text", x=0.55, y=-22, label="B", size=11) + 
   scale_shape_manual(values=c("Salal"=23, "Weevil"=22, "Ground beetle"=24)) +
   labs(x = "Distance from beach (m)") +
   ylab(expression(paste(delta^{13},'C (\211)'))) +
