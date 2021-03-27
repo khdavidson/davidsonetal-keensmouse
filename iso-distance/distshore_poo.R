@@ -248,7 +248,7 @@ ggplot(data=poo.summary, aes(x=dist_group, y=meanC)) +
 # this is also duplicatedin the distshore_poo script
 
 poo.summary <- poo.summary %>%
-  select(dist_group:seN) %>%
+  #select(dist_group:seN) %>%
   mutate(source="Faeces") %>%
   print()
 
@@ -271,10 +271,13 @@ ggplot(data=combo.summary, aes(x=dist_group, y=meanN, group=source)) +
   geom_line(aes(colour=source), size=1.3) +
   geom_errorbar(aes(ymin=meanN-seN, ymax=meanN+seN, colour=source), width=0, size=1.5) + 
   geom_point(aes(fill=source), colour="black", size=7, stroke=1.3, shape=21) +
+  geom_text(data=combo.summary%>%filter(source=="Faeces"), aes(label=n), hjust=1.5, vjust=1.5, size=8, colour="gray35") +
+  geom_text(data=combo.summary%>%filter(source=="Hair"), aes(label=n), hjust=-0.6, vjust=-0.6, size=8, colour="gray35") +
   annotate(geom="text", x=1, y=7, label="a", size=10) + 
   annotate(geom="text", x=2, y=5.2, label="b", size=10) + 
   annotate(geom="text", x=3, y=2.7, label="c", size=10) + 
   annotate(geom="text", x=4, y=1.8, label="c", size=10) + 
+  annotate(geom="text", x=0.55, y=10.2, label="A", size=11) + 
   scale_fill_manual(values=c("gray80", "gray20")) +
   scale_colour_manual(values=c("gray80", "gray20")) +
   scale_y_continuous(labels=scaleFUN) +
@@ -300,6 +303,11 @@ ggplot(data=combo.summary, aes(x=dist_group, y=meanC, group=source)) +
   geom_line(aes(colour=source), size=1.3) +
   geom_errorbar(aes(ymin=meanC-seC, ymax=meanC+seC, colour=source), width=0, size=1.5) + 
   geom_point(aes(fill=source), colour="black", size=7, stroke=1.3, shape=21) +
+  annotate(geom="text", x=1, y=-19.6, label="ab", size=10) + 
+  annotate(geom="text", x=2, y=-18.7, label="ab", size=10) + 
+  annotate(geom="text", x=3, y=-19.3, label="a", size=10) + 
+  annotate(geom="text", x=4, y=-17.7, label="b", size=10) + 
+  annotate(geom="text", x=0.55, y=-17.8, label="B", size=11) + 
   scale_fill_manual(values=c("gray80", "gray20")) +
   scale_colour_manual(values=c("gray80", "gray20")) +
   scale_y_continuous(labels=scaleFUN, breaks=seq(-28,-16, by=2)) +
