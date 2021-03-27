@@ -5,7 +5,8 @@
 setwd("~/UVic/`Field Work 2016/`RESULTS/Data files")
 
 library(tidyverse)
-library(car)    # for Anova()
+library(car)      # for Anova()
+library(ggpubr)   # for geom_bracket
 
 
 # some minor updates Mar2021
