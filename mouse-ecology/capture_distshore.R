@@ -7,6 +7,9 @@ setwd("~/UVic/`Field Work 2016/`RESULTS/Data files")
 library(tidyverse)
 library(car)    # for Anova()
 
+
+# some minor updates Mar2021
+
 ########################################################################################################################################################
 
 #                                                               DATA CLEANING & CALCULATIONS
@@ -23,15 +26,17 @@ library(car)    # for Anova()
 # First, relative abundance (CPUE) will be calculated for each phase, site and distance group, and then added together and eventually averaged across
 # sites. This is essentially all done in Stapp and Polis 2000a and b, with the exception of the phased trapping component specific to this analysis. 
 
-phase_data <- read.csv("CPUE_phases.csv")
+#phase_data <- read.csv("CPUE_phases.csv") old
+phase_data <- read.csv("CPUE_phases_genrep_08102019.csv")
 
+phase_data <- phase_data %>% rename(sex=gender, s=s_mis)
 
 # Remove Excel column calculations and re-organize males and females for R use
 phase_data_R <- phase_data %>%
   select(site:n, s) %>% 
-  gather("sex", "a_sex", 7:8) %>%
-  arrange(site, group, phase) %>%
-  select(site:a_frstcap, sex, a_sex, p:s) %>%
+  #gather("sex", "a_sex", 7:8) %>%
+  #arrange(site, group, phase) %>%
+  #select(site:a_frstcap, sex, a_sex, p:s) %>%
   print()
 # did not bother calculating CPUE to include recaps as that isn't want I'm interested in, but to do so, replace 'a_frstcap' with 'a_recap'
 
@@ -372,20 +377,24 @@ ggplot(CPUE_raw_all, aes(x=group, y=CPUE_mean_all)) +
 #----- PROPORTIONS #
 
 # data file: 'avg_propn_groups_sex' created in last pipe loop above
-avg_propn_groups_sex2 <- avg_propn_groups_sex %>% 
-  mutate(sex = ifelse(sex=="a_frstcap_females", "Females", "Males")) %>%
-  rename(Sex = sex) %>%
-  print()
-avg_propn_groups_sex2$group <- factor(avg_propn_groups_sex$group, levels = c("0-25", "50-75", "100-125", "150-200"), ordered=T)
-avg_propn_groups_sex2$stat <- c("a","ab","b","ab")
+#avg_propn_groups_sex2 <- avg_propn_groups_sex %>% 
+#  mutate(sex = ifelse(sex=="a_frstcap_females", "Females", "Males")) %>%
+#  rename(Sex = sex) %>%
+#  print()
+# ****** FIGURE 2: 
+avg_propn_groups_sex$group <- factor(avg_propn_groups_sex$group, levels = c("0-25", "50-75", "100-125", "150-200"), ordered=T)
+#avg_propn_groups_sex$stat <- c("a", "ab","b","ab")
 
 # FIRST CAPTURE plot - white for MS 
-ggplot(avg_propn_groups_sex2, aes(x=group, y=mean_propn_sex, group=Sex)) + 
+ggplot(avg_propn_groups_sex, aes(x=group, y=mean_propn_sex, group=sex)) + 
   geom_bar(aes(fill=Sex), stat="identity", position="dodge", colour="black", size=1.5) + 
-  #geom_text(aes(label=stat), vjust=-4,size=12) +
-  scale_y_continuous(limits=c(0, 1.0), breaks=seq(0, 1.0, by = 0.2))  +
+  geom_bracket(xmin=0.5, xmax=1.5, y.position=0.45, label="a", size=0.6, label.size=8, tip.length=0.01) +
+  geom_bracket(xmin=1.6, xmax=2.52, y.position=0.35, label="ab", size=0.6, label.size=8, tip.length=0.01) +
+  geom_bracket(xmin=2.59, xmax=3.5, y.position=0.35, label="ab", size=0.6, label.size=8, tip.length=0.01) +
+  geom_bracket(xmin=3.6, xmax=4.5, y.position=0.3, label="b", size=0.6, label.size=8, tip.length=0.01) +  
+  scale_y_continuous(limits=c(0, 0.5), breaks=seq(0, 1.0, by = 0.1))  +
   scale_fill_manual(values=c("gray20", "gray80")) +
-  geom_errorbar(data = avg_propn_groups_sex2, aes(ymin = mean_propn_sex - se_propn_sex,
+  geom_errorbar(data = avg_propn_groups_sex, aes(ymin = mean_propn_sex - se_propn_sex,
                                              ymax = mean_propn_sex + se_propn_sex), width=0, size=1, colour="black", position=position_dodge(width=0.9))  +
   labs(x="Distance from beach (m)", y="Proportion of captures") +
   theme_bw() +
