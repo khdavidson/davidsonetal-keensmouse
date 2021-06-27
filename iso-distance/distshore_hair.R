@@ -3,10 +3,11 @@
 
 setwd("~/UVic/`Field Work 2016/`RESULTS/Data files")
 
-hair.data = read.csv("fieldmouse_distshore_hair.csv")
-
 library(tidyverse)
 library(FSA)    # for Dunn test
+
+hair.data = read.csv("fieldmouse_distshore_hair.csv")
+
 
 #######################################################################################################################################################
 
