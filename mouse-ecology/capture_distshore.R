@@ -3,13 +3,14 @@
 # k davidson
 
 setwd("~/UVic/`Field Work 2016/`RESULTS/Data files")
+setwd("~/zzzpersonal")
 
 library(tidyverse)
 library(car)      # for Anova()
 library(ggpubr)   # for geom_bracket
 
 
-# some minor updates Mar2021
+# some minor updates Mar2021 ---- ***** to make life easier, search "MS stats" !!! 
 
 ########################################################################################################################################################
 
@@ -28,7 +29,7 @@ library(ggpubr)   # for geom_bracket
 # sites. This is essentially all done in Stapp and Polis 2000a and b, with the exception of the phased trapping component specific to this analysis. 
 
 #phase_data <- read.csv("CPUE_phases.csv") old
-phase_data <- read.csv("CPUE_phases_genrep_08102019.csv")
+phase_data <- read.csv("CPUE_phases_genrep_08012019.csv")
 
 phase_data <- phase_data %>% rename(sex=gender, s=s_mis)
 
@@ -37,7 +38,7 @@ phase_data_R <- phase_data %>%
   select(site:n, s) %>% 
   #gather("sex", "a_sex", 7:8) %>%
   #arrange(site, group, phase) %>%
-  #select(site:a_frstcap, sex, a_sex, p:s) %>%
+  #select(site:a_frstcap, p:s) %>%
   print()
 # did not bother calculating CPUE to include recaps as that isn't want I'm interested in, but to do so, replace 'a_frstcap' with 'a_recap'
 
@@ -49,7 +50,7 @@ phase_data_R <- phase_data %>%
 # summarize as unique values because the split by sex creates duplicates 
 CPUE_all <- phase_data_R %>% 
   group_by(site, phase, phase_start_date, group) %>% 
-  summarize(a_frstcap = unique(a_frstcap), p=unique(p), i=unique(i), n=unique(n), s=unique(s)) %>% 
+  summarize(a_frstcap=unique(a_frstcap), p=unique(p), i=unique(i), n=unique(n), s=unique(s)) %>% 
   arrange(site, group, phase) %>%
   mutate(CPUE_firstcap_ALL = a_frstcap*100 / ((p*i*n) - i*s/2) ) %>%       # equation 2 Nelson & Clarke 1973, where TU = p*i*n 
   print()
@@ -89,7 +90,7 @@ avg_propn_groups_all <- propn_groups_all %>%
 
 # Calculate CPUE for each sex
 CPUE_sex <- phase_data_R %>%
-  mutate(CPUE_firstcap_sex = a_sex*100 / ((p*i*n) - i*s/2) ) %>%       # equation 2 Nelson & Clarke 1973, where TU = p*i*n
+  mutate(CPUE_firstcap_sex = a_frstcap*100 / ((p*i*n) - i*s/2) ) %>%       # equation 2 Nelson & Clarke 1973, where TU = p*i*n
   print()
 
 # Sum the CPUE across each phase to have total CPUE at each site and distance group for each sex (accounting for changing effort over time)
@@ -243,7 +244,7 @@ plot(lm(propn_groups_sex$asin_propn ~ propn_groups_sex$group + propn_groups_sex$
 # arcsine doesn't really change anything and original raw proportion data were OK, so maintain that
 
 #####
-# Two-way Anova based on location of first capture  **MS stats**
+# Two-way Anova based on location of first capture                          **MS stats**
 ##### 
 options(contrasts = c("contr.sum","contr.poly"))
 propn_groups_sex$sex <- as.factor(propn_groups_sex$sex)
